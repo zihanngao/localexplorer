@@ -82,7 +82,7 @@ class ExercisesView extends React.Component {
 
   render() {
     console.log("this.state.token", this.state.token);
-    console.log("this.state.exercises.length", this.state.exercises.length);
+    console.log("this.state.exercises", this.state.exercises);
     return (
       <View key={this.state.uniqueValue}>
         {this.state.exercises.length === 0 && (

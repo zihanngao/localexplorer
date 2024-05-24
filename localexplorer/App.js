@@ -40,11 +40,9 @@ class App extends React.Component {
         <Stack.Navigator>
           {/* We only want to show Login and Signup View when the user is not logged in.
               When the user is logged in, we want to show the Profile View and the Exercises View.
-              
-              How do we do this? See https://reactnavigation.org/docs/auth-flow
             */}
           <Stack.Screen name="Login">
-            {/* This is how you pass props (e.g. setAccessToken) to another component */}
+            {/* This is pass props (e.g. setAccessToken) to another component */}
             {(props) => (
               <LoginView {...props} setAccessToken={this.setAccessToken} />
             )}

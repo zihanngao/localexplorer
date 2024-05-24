@@ -25,6 +25,7 @@ class Exercise extends Component {
             token: token,
             exerciseId: exerciseId,
             name: this.props.exerciseItem.name,
+            username: this.props.exerciseItem.username,
             calories: this.props.exerciseItem.calories,
             duration: this.props.exerciseItem.duration,
             date: moment(this.props.exerciseItem.date).format()
@@ -76,6 +77,9 @@ class Exercise extends Component {
         return (
             <View style={styles.container}>
                 <View style={styles.card}>
+                    <Text>
+                        Username: {exerciseItem.username}
+                    </Text>
                     <Text>
                         Exercise Name: {exerciseItem.name.toUpperCase()}
                     </Text>

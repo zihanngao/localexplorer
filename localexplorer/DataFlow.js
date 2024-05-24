@@ -1,7 +1,7 @@
 import base64 from 'base-64';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const API_URL = "http://131.179.3.81:5000"; 
+const API_URL = "http://131.179.2.11:5000"; 
 
 export const createUser = async (username, password) => {
     const requestContent = {

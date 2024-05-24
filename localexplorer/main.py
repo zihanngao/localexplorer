@@ -113,11 +113,12 @@ def add_exercise():
 @jwt_required()
 def get_exercises():
     token = get_jwt_identity()
-    activities = mongo.db.activities.find({'username': token})
+    activities = mongo.db.activities.find()
     result = []
     for activity in activities:
         result.append({
             'id': str(activity['_id']),
+            'username': activity['username'],
             'name': activity['name'],
             'duration': activity['duration'],
             'date': activity['date'],
