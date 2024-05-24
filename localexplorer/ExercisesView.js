@@ -28,7 +28,7 @@ class ExercisesView extends React.Component {
     });
 
     this._unsubscribe = this.props.navigation.addListener('focus', () => {
-      Alert.alert('Refreshed');
+      // Alert.alert('Refreshed');
       this.loadExercises(this.state.token);
     });
   }
@@ -55,8 +55,9 @@ class ExercisesView extends React.Component {
       }
     } catch (e) {
       console.log(e);
+      const errorMessage = e && e.message ? e.message : (e ? e.toString() : "Unknown error");
       this.setState({
-        error: e.message || e.toString(),
+        error: errorMessage,
         exercises: []
       }, () => {
         console.log("exercises state set to an empty array due to error");
@@ -93,7 +94,7 @@ class ExercisesView extends React.Component {
         )}
         <Button
           onPress={() => this.handleEdit()}
-          title="Add Exercise"
+          title="Add Post"
         />
         {this.state.exercises.length !== 0 && (
           <View>
@@ -103,7 +104,7 @@ class ExercisesView extends React.Component {
                 marginVertical: 10,
                 marginLeft: 30
               }}>
-              Your Exercises
+              Posts List
             </Text>
           </View>
         )}
