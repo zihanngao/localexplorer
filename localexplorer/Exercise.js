@@ -45,9 +45,9 @@ class Exercise extends Component {
     };
 
     handleDelete = async id => {
-        // console.log("deleting exercise");
-        // console.log("deleting exercise: " + this.state.token);
-        // console.log("deleting exercise: " + this.props.exerciseItem.id)
+        console.log("deleting exercise");
+        console.log("deleting exercise: " + this.state.token);
+        console.log("deleting exercise: " + this.props.exerciseItem.id)
         try {
             Alert.alert(
                 "Do you want to delete this exercise?",

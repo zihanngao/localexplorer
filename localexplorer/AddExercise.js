@@ -30,7 +30,7 @@ export default class AddExercise extends Component {
             token = this.props.route.params.token;
             exerciseId = this.props.route.params.id;
             this.loadExercise(token, exerciseId);
-            // console.log(edit);
+            console.log(edit);
             this.setState({
                 token: token,
                 edit: edit,
@@ -38,7 +38,7 @@ export default class AddExercise extends Component {
             });
         } else {
             token = this.props.route.params.token;
-            // console.log(edit, token);
+            console.log("token: ", token);
             this.setState({
                 token: token,
                 edit: edit,
@@ -49,7 +49,7 @@ export default class AddExercise extends Component {
     loadExercise = async (token, exerciseId) => {
         try {
             let res = await getExercise(token, exerciseId);
-            // console.log(res);
+            console.log(res);
             this.setState({
                 name: res.name,
                 duration: res.duration,
@@ -66,37 +66,39 @@ export default class AddExercise extends Component {
 
     handleAddExercise = async () => {
         if (this.state.edit) {
-            // console.log("updating exercise");
+            console.log("updating exercise");
             try {
                 Alert.alert(
                     "Do you want to update this exercise?",
                     "",
                     [
-                      { text: "OK", onPress: async () => {
-                        let newDate = new Date();
-                        this.setState({date: newDate});
-                        const res = await updateExercise(
-                            this.state.token,
-                            this.state.exerciseId,
-                            this.state.name,
-                            this.state.duration,
-                            this.state.date,
-                            this.state.calories
-                        );
-                        // console.log(res);
-                        this.setState({
-                            name: "",
-                            duration: 0,
-                            date: "",
-                            calories: 0,
-                            edit: false,
-                            exerciseId: 0
-                        });
-                        this.props.navigation.navigate("Home");
-                        } },
-                      { text: "CANCEL", onPress: ()=> this.props.navigation.navigate("AddExercise") }
+                        {
+                            text: "OK", onPress: async () => {
+                                let newDate = new Date();
+                                this.setState({ date: newDate });
+                                const res = await updateExercise(
+                                    this.state.token,
+                                    this.state.exerciseId,
+                                    this.state.name,
+                                    this.state.duration,
+                                    this.state.date,
+                                    this.state.calories
+                                );
+                                console.log(res);
+                                this.setState({
+                                    name: "",
+                                    duration: 0,
+                                    date: "",
+                                    calories: 0,
+                                    edit: false,
+                                    exerciseId: 0
+                                });
+                                this.props.navigation.navigate("Home");
+                            }
+                        },
+                        { text: "CANCEL", onPress: () => this.props.navigation.navigate("AddExercise") }
                     ]
-                  )
+                )
             } catch (e) {
                 console.log(e);
                 this.setState({
@@ -104,34 +106,36 @@ export default class AddExercise extends Component {
                 });
             }
         } else {
-            // console.log("adding exercise");
+            console.log("adding exercise, token:", this.state.token);
             try {
                 Alert.alert(
                     "Do you want to add this exercise?",
                     "",
                     [
-                      { text: "OK", onPress: async () => {
-                        let newDate = new Date();
-                        this.setState({date: newDate});
-                        const res = await addExercise(
-                            this.state.token,
-                            this.state.name,
-                            this.state.duration,
-                            this.state.date,
-                            this.state.calories
-                        );
-                        // console.log(res);
-                        this.setState({
-                            name: "",
-                            duration: 0,
-                            date: "",
-                            calories: 0
-                        });
-                        this.props.navigation.navigate("Home");
-                        } },
-                      { text: "CANCEL", onPress: ()=> this.props.navigation.navigate("Exercises") }
+                        {
+                            text: "OK", onPress: async () => {
+                                let newDate = new Date();
+                                this.setState({ date: newDate });
+                                const res = await addExercise(
+                                    this.state.token,
+                                    this.state.name,
+                                    this.state.duration,
+                                    this.state.date,
+                                    this.state.calories
+                                );
+                                console.log("Add exercise response:", res);
+                                this.setState({
+                                    name: "",
+                                    duration: 0,
+                                    date: "",
+                                    calories: 0
+                                });
+                                this.props.navigation.navigate("Home");
+                            }
+                        },
+                        { text: "CANCEL", onPress: () => this.props.navigation.navigate("Exercises") }
                     ]
-                  )
+                )
             } catch (e) {
                 console.log(e);
                 this.setState({
@@ -190,6 +194,7 @@ export default class AddExercise extends Component {
                     onPress={this.clearFields}
                     title="Reset"
                 />
+                {this.state.error ? <Text style={{ color: "red" }}>{this.state.error}</Text> : null}
             </View>
         );
     }
@@ -197,19 +202,19 @@ export default class AddExercise extends Component {
 
 const styles = StyleSheet.create({
     container: {
-      flex: 1,
-      justifyContent: "flex-start",
-      margin: 100,
-      marginHorizontal: 30,
+        flex: 1,
+        justifyContent: "flex-start",
+        margin: 100,
+        marginHorizontal: 30,
     },
     title: {
-      textAlign: "center",
-      marginVertical: 10,
+        textAlign: "center",
+        marginVertical: 10,
     },
     input: {
-      borderWidth: 1,
-      padding: 8,
-      height: 40,
-      marginVertical: 10,
+        borderWidth: 1,
+        padding: 8,
+        height: 40,
+        marginVertical: 10,
     },
-  });
+});

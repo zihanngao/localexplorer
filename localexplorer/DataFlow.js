@@ -1,5 +1,7 @@
-import base64 from "base-64";
+import base64 from 'base-64';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const API_URL = "http://131.179.3.81:5000"; 
 
 export const createUser = async (username, password) => {
     const requestContent = {
@@ -8,18 +10,14 @@ export const createUser = async (username, password) => {
             Accept: "application/json",
             "Content-Type": "application/json"
         },
-        body: JSON.stringify({
-            username,
-            password,
-        })
+        body: JSON.stringify({ username, password })
     };
-    const res = await fetch("https://cs571.cs.wisc.edu/users", requestContent);
+    const res = await fetch(`${API_URL}/users`, requestContent);
     if (!res.ok) {
         const err = await res.json();
         throw err.message;
     }
-    const getLoginRes = await login(username, password);
-    return getLoginRes;
+    return await login(username, password);
 };
 
 export const login = async (username, password) => {
@@ -30,14 +28,12 @@ export const login = async (username, password) => {
             Authorization: `Basic ${auth}`
         }
     };
-    // console.log("auth " + auth);
-    const res = await fetch("https://cs571.cs.wisc.edu/login", requestContent);
+    const res = await fetch(`${API_URL}/login`, requestContent);
     if (!res.ok) {
         const err = await res.json();
         throw err.message;
     }
     const token = await res.json();
-    // console.log("token " + JSON.stringify(token));
     try {
         await AsyncStorage.setItem("token", token.token);
         await AsyncStorage.setItem("username", username);
@@ -48,17 +44,13 @@ export const login = async (username, password) => {
 };
 
 export const getUser = async (token, username) => {
-    console.log("getUser: " + token, username)
     const requestContent = {
         method: "GET",
         headers: {
-            "x-access-token": token
+            Authorization: `Bearer ${token}`
         }
     };
-    const res = await fetch(
-        `https://cs571.cs.wisc.edu/users/${username}`,
-        requestContent
-    );
+    const res = await fetch(`${API_URL}/users/${username}`, requestContent);
     if (!res.ok) {
         const err = await res.json();
         throw err.message;
@@ -82,7 +74,7 @@ export const updateUser = async (
         headers: {
             Accept: "application/json",
             "Content-Type": "application/json",
-            "x-access-token": token
+            Authorization: `Bearer ${token}`
         },
         body: JSON.stringify({
             firstName,
@@ -94,10 +86,7 @@ export const updateUser = async (
             goalDailyActivity
         })
     };
-    const res = await fetch(
-        `https://cs571.cs.wisc.edu/users/${username}`,
-        requestContent
-    );
+    const res = await fetch(`${API_URL}/users/${username}`, requestContent);
     if (!res.ok) {
         const err = await res.json();
         throw err.message;
@@ -111,7 +100,7 @@ export const addExercise = async (token, name, duration, date, calories) => {
         headers: {
             Accept: "application/json",
             "Content-Type": "application/json",
-            "x-access-token": token
+            Authorization: `Bearer ${token}`
         },
         body: JSON.stringify({
             name,
@@ -120,10 +109,7 @@ export const addExercise = async (token, name, duration, date, calories) => {
             calories
         })
     };
-    const res = await fetch(
-        `https://cs571.cs.wisc.edu/activities`,
-        requestContent
-    );
+    const res = await fetch(`${API_URL}/activities`, requestContent);
     if (!res.ok) {
         const err = await res.json();
         throw err.message;
@@ -131,17 +117,14 @@ export const addExercise = async (token, name, duration, date, calories) => {
     return await res.json();
 };
 
-export const getExercises = async token => {
+export const getExercises = async (token) => {
     const requestContent = {
         method: "GET",
         headers: {
-            "x-access-token": token
+            Authorization: `Bearer ${token}`
         }
     };
-    const res = await fetch(
-        `https://cs571.cs.wisc.edu/activities`,
-        requestContent
-    );
+    const res = await fetch(`${API_URL}/activities`, requestContent);
     if (!res.ok) {
         const err = await res.json();
         throw err.message;
@@ -153,13 +136,10 @@ export const getExercise = async (token, id) => {
     const requestContent = {
         method: "GET",
         headers: {
-            "x-access-token": token
+            Authorization: `Bearer ${token}`
         }
     };
-    const res = await fetch(
-        `https://cs571.cs.wisc.edu/activities/${id}`,
-        requestContent
-    );
+    const res = await fetch(`${API_URL}/activities/${id}`, requestContent);
     if (!res.ok) {
         const err = await res.json();
         throw err.message;
@@ -167,20 +147,13 @@ export const getExercise = async (token, id) => {
     return await res.json();
 };
 
-export const updateExercise = async (
-    token,
-    id,
-    name,
-    duration,
-    date,
-    calories
-) => {
+export const updateExercise = async (token, id, name, duration, date, calories) => {
     const requestContent = {
         method: "PUT",
         headers: {
             Accept: "application/json",
             "Content-Type": "application/json",
-            "x-access-token": token
+            Authorization: `Bearer ${token}`
         },
         body: JSON.stringify({
             name,
@@ -189,10 +162,7 @@ export const updateExercise = async (
             calories
         })
     };
-    const res = await fetch(
-        `https://cs571.cs.wisc.edu/activities/${id}`,
-        requestContent
-    );
+    const res = await fetch(`${API_URL}/activities/${id}`, requestContent);
     if (!res.ok) {
         const err = await res.json();
         throw err.message;
@@ -204,17 +174,13 @@ export const deleteExercise = async (token, id) => {
     const requestContent = {
         method: "DELETE",
         headers: {
-            "x-access-token": token
+            Authorization: `Bearer ${token}`
         }
     };
-    const res = await fetch(
-        `https://cs571.cs.wisc.edu/activities/${id}`,
-        requestContent
-    );
+    const res = await fetch(`${API_URL}/activities/${id}`, requestContent);
     if (!res.ok) {
         const err = await res.json();
         throw err.message;
     }
     return await res.json();
 };
-

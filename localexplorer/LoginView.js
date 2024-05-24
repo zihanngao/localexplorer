@@ -24,8 +24,8 @@ class LoginView extends React.Component {
     try {
         const res = await login(this.state.username, this.state.password);
         const token = await AsyncStorage.getItem("token");
-        // console.log(res);
-        // console.log("login: " + JSON.stringify(this.props.navigation))
+        console.log(res);
+        console.log("login: " + JSON.stringify(this.props.navigation))
         this.props.navigation.navigate("Home", {
           username: this.state.username,
           token
