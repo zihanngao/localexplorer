@@ -1,9 +1,9 @@
 import React, { Component } from "react";
 import { View, Text, Button, Alert, StyleSheet, TextInput } from "react-native";
 import moment from "moment/moment.js";
-import { addExercise, getExercise, updateExercise } from "./DataFlow";
+import { addPost, getPost, updatePost } from "./DataFlow";
 
-export default class AddExercise extends Component {
+export default class AddPost extends Component {
     static navigationOptions = {
         header: null
     };
@@ -12,29 +12,28 @@ export default class AddExercise extends Component {
         super(props);
         this.state = {
             token: "",
-            name: "",
-            duration: 0,
+            subject: "",
+            content: "",
             date: moment().format(),
-            calories: 0,
             error: "",
             edit: false,
-            exerciseId: 0
+            postId: 0
         };
     }
 
     componentDidMount() {
         const edit = this.props.route.params.edit;
         let token = "";
-        let exerciseId = 0;
+        let postId = 0;
         if (edit) {
             token = this.props.route.params.token;
-            exerciseId = this.props.route.params.id;
-            this.loadExercise(token, exerciseId);
+            postId = this.props.route.params.id;
+            this.loadPost(token, postId);
             console.log(edit);
             this.setState({
                 token: token,
                 edit: edit,
-                exerciseId: exerciseId
+                postId: postId
             });
         } else {
             token = this.props.route.params.token;
@@ -46,15 +45,14 @@ export default class AddExercise extends Component {
         }
     }
 
-    loadExercise = async (token, exerciseId) => {
+    loadPost = async (token, postId) => {
         try {
-            let res = await getExercise(token, exerciseId);
+            let res = await getPost(token, postId);
             console.log(res);
             this.setState({
-                name: res.name,
-                duration: res.duration,
-                date: moment(res.date).format(),
-                calories: res.calories
+                subject: res.subject,
+                content: res.content,
+                date: moment(res.date).format()
             });
         } catch (e) {
             console.log(e);
@@ -64,39 +62,37 @@ export default class AddExercise extends Component {
         }
     };
 
-    handleAddExercise = async () => {
+    handleAddPost = async () => {
         if (this.state.edit) {
-            console.log("updating exercise");
+            console.log("updating post");
             try {
                 Alert.alert(
-                    "Do you want to update this exercise?",
+                    "Do you want to update this post?",
                     "",
                     [
                         {
                             text: "OK", onPress: async () => {
                                 let newDate = new Date();
                                 this.setState({ date: newDate });
-                                const res = await updateExercise(
+                                const res = await updatePost(
                                     this.state.token,
-                                    this.state.exerciseId,
-                                    this.state.name,
-                                    this.state.duration,
+                                    this.state.postId,
+                                    this.state.subject,
+                                    this.state.content,
                                     this.state.date,
-                                    this.state.calories
                                 );
                                 console.log(res);
                                 this.setState({
-                                    name: "",
-                                    duration: 0,
+                                    subject: "",
+                                    content: "",
                                     date: "",
-                                    calories: 0,
                                     edit: false,
-                                    exerciseId: 0
+                                    postId: 0
                                 });
                                 this.props.navigation.navigate("Home");
                             }
                         },
-                        { text: "CANCEL", onPress: () => this.props.navigation.navigate("AddExercise") }
+                        { text: "CANCEL", onPress: () => this.props.navigation.navigate("AddPost") }
                     ]
                 )
             } catch (e) {
@@ -106,34 +102,32 @@ export default class AddExercise extends Component {
                 });
             }
         } else {
-            console.log("adding exercise, token:", this.state.token);
+            console.log("adding post, token:", this.state.token);
             try {
                 Alert.alert(
-                    "Do you want to add this exercise?",
+                    "Do you want to add this post?",
                     "",
                     [
                         {
                             text: "OK", onPress: async () => {
                                 let newDate = new Date();
                                 this.setState({ date: newDate });
-                                const res = await addExercise(
+                                const res = await addPost(
                                     this.state.token,
-                                    this.state.name,
-                                    this.state.duration,
+                                    this.state.subject,
+                                    this.state.content,
                                     this.state.date,
-                                    this.state.calories
                                 );
-                                console.log("Add exercise response:", res);
+                                console.log("Add post response:", res);
                                 this.setState({
-                                    name: "",
-                                    duration: 0,
-                                    date: "",
-                                    calories: 0
+                                    subject: "",
+                                    content: "",
+                                    date: ""
                                 });
                                 this.props.navigation.navigate("Home");
                             }
                         },
-                        { text: "CANCEL", onPress: () => this.props.navigation.navigate("Exercises") }
+                        { text: "CANCEL", onPress: () => this.props.navigation.navigate("Posts") }
                     ]
                 )
             } catch (e) {
@@ -147,12 +141,11 @@ export default class AddExercise extends Component {
 
     clearFields = () => {
         this.setState({
-            name: "",
-            duration: 0,
+            subject: "",
+            content: "",
             date: "",
-            calories: 0,
             edit: false,
-            exerciseId: 0
+            postId: 0
         });
     };
 
@@ -160,35 +153,25 @@ export default class AddExercise extends Component {
         return (
             <View style={styles.container}>
                 <Text style={styles.title}>
-                    {this.state.edit ? "Edit activity" : "Add a new activity"}
+                    {this.state.edit ? "Edit posy" : "Add a new post"}
                 </Text>
                 <TextInput
                     style={styles.input}
-                    placeholder="Exercise Name (running, strength training...)"
-                    value={this.state.name}
-                    onChangeText={name => this.setState({ name })}
+                    placeholder="Subject of your post"
+                    value={this.state.subject}
+                    onChangeText={subject => this.setState({ subject })}
                 />
                 <TextInput
                     style={styles.input}
-                    placeholder="Calories burned (kcal)"
+                    placeholder="Content of your post"
                     value={
-                        this.state.edit ? this.state.calories.toString() : null
+                        this.state.content
                     }
-                    keyboardType={"phone-pad"}
-                    onChangeText={calories => this.setState({ calories })}
-                />
-                <TextInput
-                    style={styles.input}
-                    placeholder="Duration (min)"
-                    keyboardType={"phone-pad"}
-                    value={
-                        this.state.edit ? this.state.duration.toString() : null
-                    }
-                    onChangeText={duration => this.setState({ duration })}
+                    onChangeText={content => this.setState({ content })}
                 />
                 <Button
-                    onPress={this.handleAddExercise}
-                    title="Add Exercise"
+                    onPress={this.handleAddPost}
+                    title="Add Post"
                 />
                 <Button
                     onPress={this.clearFields}

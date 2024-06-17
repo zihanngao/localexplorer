@@ -1,13 +1,11 @@
 import React from "react";
 import { StyleSheet, Text, View, Button, TextInput } from "react-native";
-//import base64 from "base-64"; // Use this library to encode `username:password` to base64
+//import base64 from "base-64";
 import { login } from "./DataFlow";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NavigationEvents } from 'react-navigation';
 
 class LoginView extends React.Component {
-  // Use Basic access authentication (https://en.wikipedia.org/wiki/Basic_access_authentication) to authenticate the user.
-  // React Native 1 lecture covered a good example of how to do this.
   static navigationOptions = {
     header: null
 };
@@ -54,9 +52,6 @@ class LoginView extends React.Component {
           </Text> */}
         {/* <TextInput style={styles.input} placeholder="Enter an input" /> */}
 
-        {/* To navigate to another component, use this.props.navigation.navigate().
-            See https://reactnavigation.org/docs/navigating for more details.
-          */}
         <Button onPress={this.handleLogin} title="Log in"/>
         <Button onPress={() => this.props.navigation.navigate('SignUp')} title="Create a new account"/>
         {/* <Button title="Log in!" onPress={() => console.log("I am a button!")} /> */}

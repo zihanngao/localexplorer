@@ -1,7 +1,7 @@
 import base64 from 'base-64';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const API_URL = "http://131.179.2.11:5000"; 
+const API_URL = "http://192.168.1.48:5000"; 
 
 export const createUser = async (username, password) => {
     const requestContent = {
@@ -63,11 +63,7 @@ export const updateUser = async (
     username,
     firstName = "",
     lastName = "",
-    goalDailyCalories = 0,
-    goalDailyProtein = 0,
-    goalDailyCarbohydrates = 0,
-    goalDailyFat = 0,
-    goalDailyActivity = 0
+    address = ""
 ) => {
     const requestContent = {
         method: "PUT",
@@ -79,11 +75,7 @@ export const updateUser = async (
         body: JSON.stringify({
             firstName,
             lastName,
-            goalDailyCalories,
-            goalDailyProtein,
-            goalDailyCarbohydrates,
-            goalDailyFat,
-            goalDailyActivity
+            address
         })
     };
     const res = await fetch(`${API_URL}/users/${username}`, requestContent);
@@ -94,7 +86,7 @@ export const updateUser = async (
     return await res.json();
 };
 
-export const addExercise = async (token, name, duration, date, calories) => {
+export const addPost = async (token, subject, content, date) => {
     const requestContent = {
         method: "POST",
         headers: {
@@ -103,10 +95,9 @@ export const addExercise = async (token, name, duration, date, calories) => {
             Authorization: `Bearer ${token}`
         },
         body: JSON.stringify({
-            name,
-            duration,
-            date,
-            calories
+            subject,
+            content,
+            date
         })
     };
     const res = await fetch(`${API_URL}/activities`, requestContent);
@@ -117,7 +108,7 @@ export const addExercise = async (token, name, duration, date, calories) => {
     return await res.json();
 };
 
-export const getExercises = async (token) => {
+export const getPosts = async (token) => {
     const requestContent = {
         method: "GET",
         headers: {
@@ -132,7 +123,7 @@ export const getExercises = async (token) => {
     return await res.json();
 };
 
-export const getExercise = async (token, id) => {
+export const getPost = async (token, id) => {
     const requestContent = {
         method: "GET",
         headers: {
@@ -147,7 +138,7 @@ export const getExercise = async (token, id) => {
     return await res.json();
 };
 
-export const updateExercise = async (token, id, name, duration, date, calories) => {
+export const updatePost = async (token, subject, content, date) => {
     const requestContent = {
         method: "PUT",
         headers: {
@@ -156,10 +147,9 @@ export const updateExercise = async (token, id, name, duration, date, calories) 
             Authorization: `Bearer ${token}`
         },
         body: JSON.stringify({
-            name,
-            duration,
-            date,
-            calories
+            subject,
+            content,
+            date
         })
     };
     const res = await fetch(`${API_URL}/activities/${id}`, requestContent);
@@ -170,7 +160,42 @@ export const updateExercise = async (token, id, name, duration, date, calories) 
     return await res.json();
 };
 
-export const deleteExercise = async (token, id) => {
+export const likePost = async (token, id) => {
+    const requestContent = {
+        method: "POST",
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    };
+    const res = await fetch(`${API_URL}/activities/${id}/like`, requestContent);
+    if (!res.ok) {
+        const err = await res.json();
+        throw err.message;
+    }
+    return await res.json();
+};
+
+export const addComment = async (token, id, content) => {
+    const requestContent = {
+        method: "POST",
+        headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: "application/json",
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            content
+        })
+    };
+    const res = await fetch(`${API_URL}/activities/${id}/comment`, requestContent);
+    if (!res.ok) {
+        const err = await res.json();
+        throw err.message;
+    }
+    return await res.json();
+};
+
+export const deletePost = async (token, id) => {
     const requestContent = {
         method: "DELETE",
         headers: {

@@ -3,7 +3,7 @@ import { StyleSheet, Text, View, Button, TextInput } from "react-native";
 import { createAppContainer, createSwitchNavigator } from "react-navigation";
 // import { createBottomTabNavigator } from "react-navigation-tabs";
 import ProfileView from "./ProfileView";
-import ExercisesView from "./ExercisesView"
+import PostsView from "./PostsView"
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -40,7 +40,7 @@ class Home extends Component {
                 </Tab.Screen>
                 {/* <Tab.Screen name="Profile" component={ProfileView} /> */}
                 <Tab.Screen 
-                    name="Exercises" 
+                    name="Posts" 
                     options={{
                     headerRight: () => (
                     <Button
@@ -50,7 +50,7 @@ class Home extends Component {
                     ),
                     }}>
                     {(props) => (
-                        <ExercisesView {...props} setAccessToken={this.props.route.params} />
+                        <PostsView {...props} setAccessToken={this.props.route.params} />
                     )}
                 </Tab.Screen>
             </Tab.Navigator>

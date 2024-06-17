@@ -18,11 +18,7 @@ class ProfileView extends React.Component {
         token: "",
         firstName: "",
         lastName: "",
-        goalDailyCalories: 0,
-        goalDailyProtein: 0,
-        goalDailyCarbohydrates: 0,
-        goalDailyFat: 0,
-        goalDailyActivity: 0,
+        address: "",
         error: "",
         edit: false
     };
@@ -48,11 +44,7 @@ loadProfile = async (token, username) => {
           username,
           firstName: res.firstName,
           lastName: res.lastName,
-          goalDailyCalories: res.goalDailyCalories,
-          goalDailyProtein: res.goalDailyProtein,
-          goalDailyCarbohydrates: res.goalDailyCarbohydrates,
-          goalDailyFat: res.goalDailyFat,
-          goalDailyActivity: res.goalDailyActivity
+          address: res.address,
       });
 
       console.log('firstName: ' + firstname)
@@ -79,11 +71,7 @@ handleSave = async () => {
           this.state.username,
           this.state.firstName,
           this.state.lastName,
-          this.state.goalDailyCalories,
-          this.state.goalDailyProtein,
-          this.state.goalDailyCarbohydrates,
-          this.state.goalDailyFat,
-          this.state.goalDailyActivity
+          this.state.address
       );
       // console.log(res);
       this.setState({
@@ -121,20 +109,8 @@ handleSave = async () => {
           <Text style={styles.content}>Last name</Text>
           <TextInput style={styles.input} placeholder="Last name" value={this.state.lastName} editable={this.state.edit} onChangeText={lastName => this.setState({ lastName })}/>
 
-          <Text style={styles.content}>Daily calories</Text>
-          <TextInput style={styles.input} placeholder="Daily calories" value={this.state.goalDailyCalories.toString()} editable={this.state.edit} keyboardType={"phone-pad"} onChangeText={goalDailyCalories => this.setState({ goalDailyCalories })}/>
-
-          <Text style={styles.content}>Daily protein</Text>
-          <TextInput style={styles.input} placeholder="Daily protein" value={this.state.goalDailyCarbohydrates.toString()} editable={this.state.edit} keyboardType={"phone-pad"} onChangeText={goalDailyCarbohydrates => this.setState({ goalDailyCarbohydrates })}/>
-
-          <Text style={styles.content}>Daily carbs</Text>
-          <TextInput style={styles.input} placeholder="Daily carbs" value={this.state.goalDailyProtein.toString()} editable={this.state.edit} keyboardType={"phone-pad"} onChangeText={goalDailyProtein => this.setState({ goalDailyProtein })}/>
-
-          <Text style={styles.content}>Daily fats</Text>
-          <TextInput style={styles.input} placeholder="Daily fats" value={this.state.goalDailyFat.toString()} editable={this.state.edit} keyboardType={"phone-pad"} onChangeText={goalDailyFat => this.setState({ goalDailyFat })}/>
-
-          <Text style={styles.content}>Daily activity</Text>
-          <TextInput style={styles.input} placeholder="Daily activity" value={this.state.goalDailyActivity.toString()} editable={this.state.edit} keyboardType={"phone-pad"} onChangeText={goalDailyActivity => this.setState({ goalDailyActivity })}/>
+          <Text style={styles.content}>Address</Text>
+          <TextInput style={styles.input} placeholder="Address" value={this.state.address} editable={this.state.edit} onChangeText={address => this.setState({ address })}/>
 
         {/* <TextInput style={styles.input} placeholder="Enter an input" /> */}
 

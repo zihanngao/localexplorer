@@ -1,9 +1,9 @@
 import React from "react";
 import { View, Text, FlatList, StyleSheet, Button, Alert } from "react-native";
-import Exercise from "./Exercise";
-import { getExercises } from "./DataFlow";
+import Post from "./Post";
+import { getPosts } from "./DataFlow";
 
-class ExercisesView extends React.Component {
+class PostsView extends React.Component {
   static navigationOptions = {
     header: null
   };
@@ -12,24 +12,23 @@ class ExercisesView extends React.Component {
     super(props);
     this.state = {
       token: "",
-      exercises: [],  // Ensure exercises is initialized as an empty array
+      posts: [],
       error: "",
     };
   }
 
   componentDidMount() {
-    // Fetch user profile information
     const { username, token } = this.props.setAccessToken;
-    console.log("Exercise: " + JSON.stringify(this.props.setAccessToken));
+    console.log("Post: " + JSON.stringify(this.props.setAccessToken));
     console.log("token and username: " + token, username);
 
     this.setState({ token }, () => {
-      this.loadExercises(token);
+      this.loadPosts(token);
     });
 
     this._unsubscribe = this.props.navigation.addListener('focus', () => {
-      // Alert.alert('Refreshed');
-      this.loadExercises(this.state.token);
+      Alert.alert('Refreshed');
+      this.loadPosts(this.state.token);
     });
   }
 
@@ -37,20 +36,20 @@ class ExercisesView extends React.Component {
     this._unsubscribe();
   }
 
-  loadExercises = async token => {
-    console.log("loading exercises");
+  loadPosts = async token => {
+    console.log("loading posts");
     try {
-      let res = await getExercises(token);
-      console.log("getExercises response:", JSON.stringify(res));
+      let res = await getPosts(token);
+      console.log("getPosts response:", JSON.stringify(res));
 
       if (Array.isArray(res)) {
-        this.setState({ exercises: res }, () => {
-          console.log("exercises state set to:", this.state.exercises);
+        this.setState({ posts: res }, () => {
+          console.log("posts state set to:", this.state.posts);
         });
       } else {
         console.log("Invalid response format:", res);
-        this.setState({ exercises: [] }, () => {
-          console.log("exercises state set to an empty array due to invalid format");
+        this.setState({ posts: [] }, () => {
+          console.log("posts state set to an empty array due to invalid format");
         });
       }
     } catch (e) {
@@ -58,17 +57,17 @@ class ExercisesView extends React.Component {
       const errorMessage = e && e.message ? e.message : (e ? e.toString() : "Unknown error");
       this.setState({
         error: errorMessage,
-        exercises: []
+        posts: []
       }, () => {
-        console.log("exercises state set to an empty array due to error");
+        console.log("posts state set to an empty array due to error:", errorMessage);
       });
     }
   };
 
   handleEdit = () => {
     console.log("handleedit");
-    console.log("Exercises token: ", this.state.token);
-    this.props.navigation.navigate("AddExercise", {
+    console.log("Posts token: ", this.state.token);
+    this.props.navigation.navigate("AddPost", {
       edit: false,
       token: this.state.token
     });
@@ -76,19 +75,31 @@ class ExercisesView extends React.Component {
 
   handleDelete = (_item) => {
     this.setState({
-      exercises: this.state.exercises.filter(item => item.id !== _item.id)
+      posts: this.state.posts.filter(item => item.id !== _item.id)
+    });
+  };
+
+  updatePostState = (updatedPost) => {
+    console.log("Updating post state:", updatedPost);
+    this.setState(prevState => {
+      const updatedPosts = prevState.posts.map(post => 
+        post.id === updatedPost.id ? updatedPost : post
+      );
+      return { posts: updatedPosts };
+    }, () => {
+      console.log("Updated posts state:", this.state.posts);
     });
   };
 
   render() {
     console.log("this.state.token", this.state.token);
-    console.log("this.state.exercises", this.state.exercises);
+    console.log("this.state.posts.length", this.state.posts.length);
     return (
       <View key={this.state.uniqueValue}>
-        {this.state.exercises.length === 0 && (
+        {this.state.posts.length === 0 && (
           <View>
             <Text style={styles.title}>
-              No activities. Add some exercises to see details.
+              No activities. Add some posts to see details.
             </Text>
           </View>
         )}
@@ -96,7 +107,7 @@ class ExercisesView extends React.Component {
           onPress={() => this.handleEdit()}
           title="Add Post"
         />
-        {this.state.exercises.length !== 0 && (
+        {this.state.posts.length !== 0 && (
           <View>
             <Text 
               style={{
@@ -104,19 +115,20 @@ class ExercisesView extends React.Component {
                 marginVertical: 10,
                 marginLeft: 30
               }}>
-              Posts List
+              Your Posts
             </Text>
           </View>
         )}
         <FlatList
-          data={this.state.exercises}
+          data={this.state.posts}
           renderItem={({ item }) => (
             <View>
-              <Exercise
-                exerciseItem={item}
+              <Post
+                postItem={item}
                 token={this.state.token}
                 navigation={this.props.navigation}
                 handleDeleteList={this.handleDelete}
+                updatePostState={this.updatePostState}
               />
             </View>
           )}
@@ -146,4 +158,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ExercisesView;
+export default PostsView;

@@ -5,8 +5,8 @@ import { Button} from "react-native";
 import LoginView from "./LoginView";
 import SignupView from "./SignupView";
 import ProfileView from "./ProfileView";
-import ExercisesView from "./ExercisesView";
-import AddExercise  from './AddExercise';
+import PostsView from "./PostsView";
+import AddPost  from './AddPost';
 import Home from "./Home"
 
 import { NavigationContainer } from "@react-navigation/native";
@@ -14,10 +14,9 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createDrawerNavigator } from '@react-navigation/drawer';
 
-// Review the navigators from React Native 2 lecture.
-const Stack = createStackNavigator(); // Stack Navigator (https://reactnavigation.org/docs/stack-navigator)
-const Tab = createBottomTabNavigator(); // Bottom Tabs Navigator (https://reactnavigation.org/docs/tab-based-navigation)
-const Drawer = createDrawerNavigator(); // Drawer Navigator (https://reactnavigation.org/docs/drawer-navigator)
+const Stack = createStackNavigator();
+const Tab = createBottomTabNavigator();
+const Drawer = createDrawerNavigator();
 
 class App extends React.Component {
   constructor() {
@@ -38,30 +37,22 @@ class App extends React.Component {
     return (
       <NavigationContainer>
         <Stack.Navigator>
-          {/* We only want to show Login and Signup View when the user is not logged in.
-              When the user is logged in, we want to show the Profile View and the Exercises View.
-            */}
           <Stack.Screen name="Login">
-            {/* This is pass props (e.g. setAccessToken) to another component */}
             {(props) => (
               <LoginView {...props} setAccessToken={this.setAccessToken} />
             )}
           </Stack.Screen>
 
-          {/* If you do not need to pass props, you can pass a component as a `component` prop to Screens like below */}
           <Stack.Screen name="SignUp" component={SignupView} />
 
-          {/* We can also nest another navigator (e.g. Bottom Tabs, Drawer, etc.) inside a stack navigator.
-              See https://reactnavigation.org/docs/nesting-navigators on how to nest navigators.
-            */}
           <Stack.Screen name="Home" component={Home} options={{ headerShown: false }}>
             {/* {(props) => <ProfileView {...props} />}
-            {(props) => <ExercisesView {...props} />} */}
+            {(props) => <PostsView {...props} />} */}
           </Stack.Screen>
 
           <Stack.Screen 
-            name="AddExercise" 
-            component={AddExercise} 
+            name="AddPost" 
+            component={AddPost} 
             options={{
               headerRight: () => (
               <Button

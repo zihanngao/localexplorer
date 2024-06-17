@@ -68,11 +68,7 @@ def get_user(username):
             'username': user['username'],
             'firstName': user.get('firstName', ''),
             'lastName': user.get('lastName', ''),
-            'goalDailyCalories': user.get('goalDailyCalories', 0),
-            'goalDailyProtein': user.get('goalDailyProtein', 0),
-            'goalDailyCarbohydrates': user.get('goalDailyCarbohydrates', 0),
-            'goalDailyFat': user.get('goalDailyFat', 0),
-            'goalDailyActivity': user.get('goalDailyActivity', 0)
+            'address': user.get('address', ''),
         }), 200
     else:
         return jsonify({'error': 'User not found'}), 404
@@ -87,87 +83,102 @@ def update_user(username):
 
     data = request.get_json()
     update_data = {key: value for key, value in data.items() if key in [
-        'firstName', 'lastName', 'goalDailyCalories', 'goalDailyProtein',
-        'goalDailyCarbohydrates', 'goalDailyFat', 'goalDailyActivity'
+        'firstName', 'lastName', 'address'
     ]}
     mongo.db.users.update_one({'username': username}, {'$set': update_data})
     return jsonify({'message': 'User updated successfully'}), 200
 
-# Add an exercise
+# Add a post (post)
 @app.route('/activities', methods=['POST'])
 @jwt_required()
-def add_exercise():
+def add_post():
     data = request.get_json()
     token = get_jwt_identity()
-    exercise_id = mongo.db.activities.insert_one({
+    post_id = mongo.db.activities.insert_one({
         'username': token,
-        'name': data['name'],
-        'duration': data['duration'],
+        'subject': data['subject'],
+        'content': data['content'],
         'date': data['date'],
-        'calories': data['calories']
+        'likes': [],
+        'comments': []
     }).inserted_id
-    return jsonify({'id': str(exercise_id)}), 201
+    return jsonify({'id': str(post_id)}), 201
 
-# Get all exercises
+# Get all posts
 @app.route('/activities', methods=['GET'])
 @jwt_required()
-def get_exercises():
-    token = get_jwt_identity()
+def get_posts():
     activities = mongo.db.activities.find()
     result = []
     for activity in activities:
         result.append({
             'id': str(activity['_id']),
             'username': activity['username'],
-            'name': activity['name'],
-            'duration': activity['duration'],
+            'subject': activity['subject'],
+            'content': activity['content'],
             'date': activity['date'],
-            'calories': activity['calories']
+            'likes': activity.get('likes', []),
+            'comments': activity.get('comments', [])
         })
     return jsonify(result), 200
 
-# Get a single exercise by ID
-@app.route('/activities/<id>', methods=['GET'])
-@jwt_required()
-def get_exercise(id):
-    token = get_jwt_identity()
-    activity = mongo.db.activities.find_one({'_id': ObjectId(id), 'username': token})
-    if activity:
-        return jsonify({
-            'id': str(activity['_id']),
-            'name': activity['name'],
-            'duration': activity['duration'],
-            'date': activity['date'],
-            'calories': activity['calories']
-        }), 200
-    else:
-        return jsonify({'error': 'Exercise not found'}), 404
-
-# Update an exercise
+# Update a post (post)
 @app.route('/activities/<id>', methods=['PUT'])
 @jwt_required()
-def update_exercise(id):
+def update_post(id):
     token = get_jwt_identity()
     data = request.get_json()
     update_data = {key: value for key, value in data.items() if key in [
-        'name', 'duration', 'date', 'calories'
+        'subject', 'content'
     ]}
     result = mongo.db.activities.update_one({'_id': ObjectId(id), 'username': token}, {'$set': update_data})
     if result.matched_count > 0:
-        return jsonify({'message': 'Exercise updated successfully'}), 200
+        return jsonify({'message': 'Post updated successfully'}), 200
     else:
-        return jsonify({'error': 'Exercise not found'}), 404
+        return jsonify({'error': 'Post not found'}), 404
 
-# Delete an exercise
+# Delete an post
 @app.route('/activities/<id>', methods=['DELETE'])
 @jwt_required()
-def delete_exercise(id):
+def delete_post(id):
     token = get_jwt_identity()
     result = mongo.db.activities.delete_one({'_id': ObjectId(id), 'username': token})
     if result.deleted_count > 0:
-        return jsonify({'message': 'Exercise deleted successfully'}), 200
+        return jsonify({'message': 'Post deleted successfully'}), 200
     else:
-        return jsonify({'error': 'Exercise not found'}), 404
+        return jsonify({'error': 'Post not found'}), 404
+
+# Add a like to a post
+@app.route('/activities/<id>/like', methods=['POST'])
+@jwt_required()
+def add_like(id):
+    token = get_jwt_identity()
+    activity = mongo.db.activities.find_one({'_id': ObjectId(id)})
+    if activity:
+        if token not in activity.get('likes', []):
+            mongo.db.activities.update_one({'_id': ObjectId(id)}, {'$push': {'likes': token}})
+            return jsonify({'message': 'Like added successfully'}), 200
+        else:
+            return jsonify({'error': 'User already liked this post'}), 400
+    else:
+        return jsonify({'error': 'Post not found'}), 404
+
+# Add a comment to a post
+@app.route('/activities/<id>/comment', methods=['POST'])
+@jwt_required()
+def add_comment(id):
+    token = get_jwt_identity()
+    data = request.get_json()
+    comment = {
+        'username': token,
+        'content': data['content'],
+        'date': datetime.datetime.utcnow()
+    }
+    result = mongo.db.activities.update_one({'_id': ObjectId(id)}, {'$push': {'comments': comment}})
+    if result.matched_count > 0:
+        return jsonify({'message': 'Comment added successfully'}), 200
+    else:
+        return jsonify({'error': 'Post not found'}), 404
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
